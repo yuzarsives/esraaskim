@@ -1,1166 +1,744 @@
 <!DOCTYPE html>
-<html lang="tr" class="dark">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- YouTube Hata 153 (HTTP Referer) Çözümü İçin Zorunlu Meta Etiketi -->
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <title>Esra & Yusuf ✨ Bizim Köşemiz</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Sunucusuz İki Cihaz Arası Doğrudan P2P Bağlantı İçin PeerJS -->
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        burgundy: {
-                            950: '#1a0409',
-                            900: '#2a0810',
-                            800: '#3d0c18',
-                            700: '#5c1324',
-                            600: '#7a1c32',
-                            500: '#9b2842',
-                        },
-                        beige: {
-                            50: '#fdfaf6',
-                            100: '#f5ebe0',
-                            200: '#e3d5ca',
-                            300: '#d5bdaf',
-                            400: '#c89f81',
-                            500: '#b08263',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        :root {
-            --bg-deep: #1e050b;
-            --bg-burgundy: #2a0810;
-            --bg-card: rgba(52, 11, 21, 0.82);
-            --beige-light: #f5ebe0;
-            --beige-warm: #e3d5ca;
-            --beige-muted: #d5bdaf;
-            --beige-gold: #c89f81;
-            --burgundy-accent: #7a1c32;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #480e1c 0%, #2a0810 55%, #160307 100%);
-            color: var(--beige-light);
-            overflow-x: hidden;
-            transition: background 0.7s ease;
-        }
-
-        .font-romantic {
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* Ambiyans / Loş Sinema Modu */
-        body.ambiance-dim {
-            background: radial-gradient(circle at 50% 30%, #24060d 0%, #0d0204 75%, #050102 100%);
-        }
-        body.ambiance-dim .dimmable-ui {
-            opacity: 0.25;
-            transition: opacity 0.4s ease;
-        }
-        body.ambiance-dim .dimmable-ui:hover {
-            opacity: 1;
-        }
-        body.ambiance-dim #videoWrapper {
-            box-shadow: 0 0 70px 10px rgba(200, 159, 129, 0.22), 0 0 40px 4px rgba(122, 28, 50, 0.55) !important;
-            border-color: rgba(213, 189, 175, 0.45) !important;
-        }
-
-        /* Bordo & Bej Cam Paneller */
-        .burgundy-panel {
-            background: rgba(48, 10, 20, 0.78);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(213, 189, 175, 0.22);
-            box-shadow: 0 12px 35px -8px rgba(12, 2, 5, 0.7);
-        }
-
-        .beige-card {
-            background: linear-gradient(145deg, #f5ebe0 0%, #e3d5ca 100%);
-            color: #2a0810;
-            border: 1px solid #c89f81;
-            box-shadow: 0 15px 35px rgba(15, 2, 6, 0.5);
-        }
-
-        .burgundy-glow {
-            box-shadow: 0 0 35px -5px rgba(122, 28, 50, 0.55), 0 0 20px -5px rgba(213, 189, 175, 0.18);
-        }
-
-        /* Buton Stilleri */
-        .btn-burgundy {
-            background: linear-gradient(135deg, #7a1c32 0%, #5c1324 100%);
-            color: #f5ebe0;
-            border: 1px solid rgba(227, 213, 202, 0.3);
-            box-shadow: 0 4px 15px rgba(42, 8, 16, 0.5);
-            transition: all 0.25s ease;
-        }
-        .btn-burgundy:hover {
-            background: linear-gradient(135deg, #8f223b 0%, #6e172b 100%);
-            border-color: rgba(245, 235, 224, 0.55);
-            transform: translateY(-1px);
-        }
-
-        .btn-beige {
-            background: linear-gradient(135deg, #f5ebe0 0%, #e3d5ca 100%);
-            color: #3d0c18;
-            border: 1px solid #c89f81;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-            transition: all 0.25s ease;
-        }
-        .btn-beige:hover {
-            background: linear-gradient(135deg, #fdfaf6 0%, #ede0d4 100%);
-            transform: translateY(-1px);
-        }
-
-        /* Uçuşan Emojiler ve Kalp Yağmuru */
-        @keyframes floatUpEmoji {
-            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
-            50% { transform: translateY(-120px) scale(1.25) rotate(-8deg); opacity: 0.95; }
-            100% { transform: translateY(-260px) scale(1.5) rotate(8deg); opacity: 0; }
-        }
-        .floating-emoji {
-            position: absolute;
-            bottom: 65px;
-            font-size: 2.2rem;
-            pointer-events: none;
-            animation: floatUpEmoji 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            z-index: 45;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.45));
-        }
-
-        @keyframes fallDownPetal {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
-            50% { transform: translateY(50vh) translateX(25px) rotate(180deg); opacity: 0.9; }
-            100% { transform: translateY(105vh) translateX(-20px) rotate(360deg); opacity: 0; }
-        }
-        .falling-petal {
-            position: fixed;
-            top: -40px;
-            font-size: 1.75rem;
-            pointer-events: none;
-            z-index: 90;
-            animation: fallDownPetal 4.2s ease-in-out forwards;
-        }
-
-        /* Özel Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #24060d;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #7a1c32;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #c89f81;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Esra & Yusuf 🥀 Bizim Köşemiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #1a050a;
+      --bg-burgundy: #2d0a12;
+      --card-burgundy: rgba(58, 13, 24, 0.88);
+      --beige-light: #f5ebe0;
+      --beige-warm: #e3d5ca;
+      --beige-muted: #d5bdaf;
+      --accent-rose: #9e2a47;
+    }
+    body {
+      background: radial-gradient(circle at top, #3d0c18 0%, #1a050a 70%, #110206 100%);
+      color: var(--beige-light);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    .serif-title { font-family: 'Playfair Display', serif; }
+    .burgundy-card {
+      background: var(--card-burgundy);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(227, 213, 202, 0.18);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+    }
+    .beige-btn {
+      background: linear-gradient(135deg, #f5ebe0 0%, #d5bdaf 100%);
+      color: #2d0a12;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .beige-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(245, 235, 224, 0.25);
+    }
+    .burgundy-btn {
+      background: linear-gradient(135deg, #801b34 0%, #520e1f 100%);
+      color: #f5ebe0;
+      border: 1px solid rgba(245, 235, 224, 0.25);
+      transition: all 0.2s ease;
+    }
+    .burgundy-btn:hover {
+      background: linear-gradient(135deg, #9e2a47 0%, #691429 100%);
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.9); opacity: 1; }
+      100% { transform: translateY(-240px) scale(1.5); opacity: 0; }
+    }
+    .floating-item {
+      position: fixed;
+      bottom: 60px;
+      font-size: 2.2rem;
+      pointer-events: none;
+      animation: floatUp 2.6s ease-out forwards;
+      z-index: 999;
+    }
+    input[type="range"] {
+      accent-color: #e3d5ca;
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-beige-300 selection:text-burgundy-900">
+<body class="min-h-screen flex flex-col">
 
-    <!-- SARILMA BİLDİRİMİ OVERLAY -->
-    <div id="hugOverlay" class="fixed inset-0 pointer-events-none flex items-center justify-center z-[80] hidden">
-        <div class="beige-card px-8 py-6 rounded-3xl shadow-2xl border-2 border-burgundy-600 flex flex-col items-center gap-2 text-center transform scale-100 animate-bounce">
-            <div class="text-5xl">🤗🌹</div>
-            <h3 id="hugOverlayTitle" class="font-romantic text-2xl font-bold text-burgundy-900">Yusuf sana sımsıkı sarıldı!</h3>
-            <p class="text-xs text-burgundy-700 font-medium">Kalplerimiz aynı sahnede atıyor ♥</p>
-        </div>
+  <!-- GİRİŞ / KOLTUK SEÇİM EKRANI -->
+  <div id="loginModal" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div class="burgundy-card max-w-md w-full rounded-3xl p-7 text-center space-y-5 border border-[#e3d5ca]/30">
+      <div class="text-4xl">🥀</div>
+      <h1 class="serif-title text-3xl font-bold text-[#f5ebe0]">Esra & Yusuf</h1>
+      <p class="text-xs text-[#d5bdaf] italic">"Mesafeler sadece sayılardan ibaret, aynı sahnede buluşalım..."</p>
+
+      <div class="text-left space-y-1">
+        <label class="text-xs text-[#d5bdaf] font-semibold">Ortak Parolamız (Oda Kodu)</label>
+        <input id="roomInput" type="text" value="ESRAYUSUF" class="w-full p-3 rounded-xl bg-[#1a050a]/90 border border-[#d5bdaf]/30 text-[#f5ebe0] text-center font-bold tracking-widest uppercase focus:outline-none focus:border-[#f5ebe0]" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button onclick="joinCinema('Yusuf', true)" class="beige-btn py-3.5 px-4 rounded-2xl flex flex-col items-center gap-1">
+          <span class="text-2xl">👦🏻</span>
+          <span class="text-sm font-bold">Yusuf</span>
+          <span class="text-[10px] opacity-75">Odayı Aç (1. Kişi)</span>
+        </button>
+        <button onclick="joinCinema('Esra', false)" class="burgundy-btn py-3.5 px-4 rounded-2xl flex flex-col items-center gap-1">
+          <span class="text-2xl">👧🏻</span>
+          <span class="text-sm font-bold">Esra</span>
+          <span class="text-[10px] opacity-80">Yusuf'a Katıl (2. Kişi)</span>
+        </button>
+      </div>
+
+      <p class="text-[11px] text-[#d5bdaf]/70 pt-1">
+        Not: Önce biriniz "Yusuf (Odayı Aç)" butonuna, diğeriniz 2 saniye sonra "Esra (Yusuf'a Katıl)" butonuna bassın.
+      </p>
+    </div>
+  </div>
+
+  <!-- TARAYICI OYNATMA KİLİDİ AÇICI BANNER -->
+  <div id="autoplayUnlockBanner" class="hidden bg-amber-900/90 border-b border-amber-400/40 px-4 py-2.5 text-center flex items-center justify-center gap-3 z-40">
+    <span class="text-xs text-amber-100">🔊 Karşı taraf videoyu başlattığında senin ekranında da otomatik başlaması için bir kez buraya tıkla:</span>
+    <button onclick="unlockPlayerAudio()" class="beige-btn px-3 py-1 rounded-lg text-xs">Senkronizasyonu Etkinleştir</button>
+  </div>
+
+  <!-- ÜST BAR -->
+  <header class="burgundy-card px-5 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-[#e3d5ca]/15">
+    <div class="flex items-center gap-3">
+      <span class="serif-title text-xl font-bold text-[#f5ebe0]">🥀 Esra & Yusuf</span>
+      <span id="userBadge" class="text-xs bg-[#1a050a] text-[#e3d5ca] px-3 py-1 rounded-full border border-[#d5bdaf]/25">Koltuk seçiliyor...</span>
+      <span id="connStatus" class="text-xs px-3 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-600/30">⏳ Eşleşme bekleniyor...</span>
     </div>
 
-    <!-- SÜRPRİZ MEKTUP / GÜNÜN NOTU MODALI -->
-    <div id="loveLetterModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm flex items-center justify-center z-[75] p-4 hidden">
-        <div class="beige-card max-w-lg w-full rounded-3xl p-6 sm:p-8 relative border-2 border-beige-400">
-            <button onclick="closeLoveLetterModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-burgundy-900/10 hover:bg-burgundy-900/20 text-burgundy-900 flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <div class="text-center mb-4">
-                <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-burgundy-800 text-beige-100 text-xl mb-2 shadow-md">
-                    <i class="fa-solid fa-envelope-open-text"></i>
-                </span>
-                <h2 class="font-romantic text-2xl sm:text-3xl font-bold text-burgundy-900">Bizim Küçük Notumuz</h2>
-                <p id="letterAuthorLabel" class="text-xs text-burgundy-700 mt-0.5 italic">Yusuf'tan Esra'ya özel not ♥</p>
-            </div>
-
-            <div class="bg-beige-50/90 border border-beige-300 rounded-2xl p-5 shadow-inner mb-5">
-                <p id="loveLetterContent" class="font-romantic text-lg sm:text-xl text-burgundy-900 leading-relaxed text-center italic">
-                    "Seninle izlediğimiz her sahne, dinlediğimiz her şarkı benim en güzel anım. İyi ki varsın Esra'm, seni çok seviyorum ♥"
-                </p>
-            </div>
-
-            <!-- Yeni Not Yazma & Hazır Romantik Not Seçme -->
-            <div class="space-y-3 border-t border-beige-300 pt-4">
-                <label class="block text-xs font-semibold uppercase tracking-wider text-burgundy-800">
-                    ✍️ İkinizin Ekranında Görünecek Yeni Bir Not Bırak:
-                </label>
-                <textarea id="newLoveNoteInput" rows="2" placeholder="Esra'ya veya Yusuf'a sürpriz bir not yaz..." class="w-full rounded-xl bg-beige-50 border border-beige-400 p-3 text-sm text-burgundy-950 placeholder-burgundy-700/50 focus:outline-none focus:border-burgundy-700"></textarea>
-                
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="fillPresetNote('Mesafeler ne kadar olursa olsun, aynı ekrana bakarken yanımdasın. Seni çok seviyorum ♥')" class="text-[11px] bg-burgundy-900/10 hover:bg-burgundy-900/20 text-burgundy-900 px-2.5 py-1 rounded-lg transition">
-                        ✨ "Mesafeler ne kadar..."
-                    </button>
-                    <button type="button" onclick="fillPresetNote('Dünyanın en güzel dizisi senin gülüşünü izlemek. İyi ki benimsin sevgilim 🌹')" class="text-[11px] bg-burgundy-900/10 hover:bg-burgundy-900/20 text-burgundy-900 px-2.5 py-1 rounded-lg transition">
-                        🌹 "Dünyanın en güzel dizisi..."
-                    </button>
-                    <button type="button" onclick="fillPresetNote('Mısırını çayını al gel, bu gece sadece ikimizin gecesi 🍿🕯️')" class="text-[11px] bg-burgundy-900/10 hover:bg-burgundy-900/20 text-burgundy-900 px-2.5 py-1 rounded-lg transition">
-                        🍿 "Bu gece ikimizin gecesi..."
-                    </button>
-                </div>
-
-                <div class="flex justify-end gap-2 pt-1">
-                    <button onclick="closeLoveLetterModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-burgundy-800 hover:bg-burgundy-900/10 transition">
-                        Kapat
-                    </button>
-                    <button onclick="sendLoveLetter()" class="btn-burgundy px-5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-paper-plane"></i> Zarfı İkinizin Ekranında Aç
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="flex items-center gap-2">
+      <button onclick="sendHug()" class="burgundy-btn px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1">
+        🤗 Sımsıkı Sarıl
+      </button>
+      <button onclick="sendRoseRain()" class="burgundy-btn px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1">
+        🌹 Gül Yağdır
+      </button>
+      <button onclick="openNoteModal()" class="beige-btn px-3 py-1.5 rounded-xl text-xs flex items-center gap-1">
+        💌 Günün Notu
+      </button>
     </div>
+  </header>
 
-    <!-- GİRİŞ / KİM İZLİYOR EKRANI -->
-    <div id="loginModal" class="fixed inset-0 bg-burgundy-950/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="burgundy-panel max-w-md w-full rounded-3xl p-6 sm:p-8 border border-beige-300/30 shadow-2xl space-y-5 relative overflow-hidden">
-            <!-- Dekoratif Arka Plan Işıltısı -->
-            <div class=" -top-20 -right-20 w-44 h-44 bg-beige-300/10 rounded-full blur-3xl pointer-events-none absolute"></div>
-            <div class=" -bottom-20 -left-20 w-44 h-44 bg-burgundy-500/20 rounded-full blur-3xl pointer-events-none absolute"></div>
+  <!-- ANA SAHNE -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 max-w-7xl w-full mx-auto">
 
-            <div class="text-center space-y-2 relative">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-beige-100/10 border border-beige-200/30 text-beige-200 text-xs">
-                    <i class="fa-solid fa-heart text-beige-300"></i> Özel Sinema Odamız
-                </div>
-                <h1 class="font-romantic text-3xl sm:text-4xl font-bold text-beige-100 tracking-wide">
-                    Esra <span class="text-beige-400">&amp;</span> Yusuf
-                </h1>
-                <p class="text-xs text-beige-300/90">
-                    Birlikte aynı anda film, dizi ve müzik keyfi yapacağımız özel köşemiz ♥
-                </p>
-            </div>
+    <!-- SOL: VİDEO VE ORTAK KUMANDA -->
+    <div class="lg:col-span-2 flex flex-col gap-3">
 
-            <!-- Yerel Dosya / Sandbox Uyarısı -->
-            <div id="fileProtocolWarning" class="hidden bg-burgundy-800/90 border border-beige-400/50 text-beige-100 text-xs p-3.5 rounded-2xl leading-relaxed">
-                <div class="font-semibold text-beige-200 mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Dizi &amp; Video Oynatma Notu:</div>
-                Bazı diziler YouTube kısıtlaması (Hata 153) verirse video üstündeki <b>"Oynatıcı Modu"</b> butonundan <b>Mod 2</b> veya <b>Mod 3</b>'e geçebilir ya da dosyayı <b>Netlify Drop</b> ile gerçek bir linke yükleyebilirsin.
-            </div>
+      <!-- Link Yapıştırma Barı -->
+      <div class="burgundy-card p-3 rounded-2xl flex flex-wrap gap-2 items-center">
+        <input id="videoUrlInput" type="text" placeholder="YouTube video linkini buraya yapıştır (Örn: https://www.youtube.com/watch?v=...)" class="flex-1 min-w-[220px] bg-[#1a050a]/90 border border-[#d5bdaf]/25 rounded-xl px-3.5 py-2 text-sm text-[#f5ebe0] placeholder-[#d5bdaf]/50 focus:outline-none focus:border-[#f5ebe0]" />
+        <button onclick="loadNewVideo()" class="beige-btn px-4 py-2 rounded-xl text-sm">
+          🎬 İkimizde de Aç
+        </button>
+      </div>
 
-            <!-- Kim Giriş Yapıyor Seçimi -->
-            <div class="space-y-2">
-                <label class="text-xs font-medium text-beige-200 block text-center">Sinema Koltuğunu Seç:</label>
-                <div class="grid grid-cols-2 gap-3 pt-1">
-                    <button type="button" onclick="selectRole('Yusuf', true)" id="roleBtnYusuf" class="p-4 rounded-2xl border-2 border-beige-200 bg-burgundy-700/70 text-beige-100 flex flex-col items-center gap-1.5 transition hover:scale-[1.02]">
-                        <span class="text-3xl">👦🏻</span>
-                        <span class="font-romantic font-bold text-base">Yusuf</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-beige-100 text-burgundy-900 font-semibold">Odayı Hazırla</span>
-                    </button>
+      <!-- Hızlı Seçim Butonları -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-[#d5bdaf]">✨ Hazır Sahneler:</span>
+        <button onclick="changeVideoById('jfKfPfyJRdk')" class="burgundy-btn px-2.5 py-1 rounded-lg">☕ Lo-Fi Gece Müziği</button>
+        <button onclick="changeVideoById('5qap5aO4i9A')" class="burgundy-btn px-2.5 py-1 rounded-lg">🌧️ Yağmur & Piyano</button>
+        <button onclick="changeVideoById('LXb3EKWsInQ')" class="burgundy-btn px-2.5 py-1 rounded-lg">🌲 4K Doğa</button>
+      </div>
 
-                    <button type="button" onclick="selectRole('Esra', false)" id="roleBtnEsra" class="p-4 rounded-2xl border border-beige-300/30 bg-burgundy-900/50 text-beige-200 flex flex-col items-center gap-1.5 transition hover:scale-[1.02]">
-                        <span class="text-3xl">👧🏻</span>
-                        <span class="font-romantic font-bold text-base">Esra</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-burgundy-700 text-beige-200 font-semibold">Yusuf'a Katıl</span>
-                    </button>
-                </div>
-            </div>
+      <!-- YouTube Oynatıcı Kutusu -->
+      <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden border border-[#d5bdaf]/25 shadow-2xl">
+        <div id="player" class="w-full h-full"></div>
+      </div>
 
-            <!-- Gizli Parola / Oda Anahtarı -->
-            <div class="space-y-1.5">
-                <div class="flex justify-between items-center text-xs text-beige-300">
-                    <span>🔒 Ortak Oda Parolamız</span>
-                    <span class="text-[11px] text-beige-400">İkinizde de aynı olmalı</span>
-                </div>
-                <input id="roomInput" type="text" value="ESRAYUSUF" class="w-full p-3 rounded-xl bg-burgundy-950/80 border border-beige-300/30 text-beige-100 font-semibold tracking-widest text-center uppercase focus:outline-none focus:border-beige-300" />
-            </div>
-
-            <!-- Giriş Butonu -->
-            <button id="enterCornerBtn" onclick="enterOurCorner()" class="w-full btn-beige py-3.5 rounded-2xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-xl">
-                <i class="fa-solid fa-door-open"></i> <span id="enterBtnText">Yusuf Olarak Köşemizi Aç</span>
-            </button>
-
-            <p class="text-[11px] text-center text-beige-300/70 italic">
-                Yusuf tarafından Esra için sevgiyle hazırlandı ♥
-            </p>
-        </div>
-    </div>
-
-    <!-- ÜST BAR (HEADER) -->
-    <header class="burgundy-panel border-b border-beige-300/20 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 dimmable-ui">
-        <!-- Sol: Başlık & Bağlantı Rozeti -->
+      <!-- ÖZEL SENKRONİZE KUMANDA BAR (İKİ TARAF DA KULLANABİLİR) -->
+      <div class="burgundy-card p-4 rounded-2xl space-y-3">
+        <!-- İlerleme Çubuğu (Seek Bar) -->
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-beige-100 to-beige-300 text-burgundy-900 flex items-center justify-center font-romantic font-bold text-lg shadow-md border border-beige-400">
-                E&amp;Y
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="font-romantic font-bold text-lg sm:text-xl text-beige-100 tracking-wide">
-                        Esra <span class="text-beige-400">&amp;</span> Yusuf
-                    </h1>
-                    <span id="roomBadge" class="text-[11px] bg-burgundy-800 text-beige-200 px-2.5 py-0.5 rounded-full border border-beige-300/30">
-                        Bizim Köşemiz
-                    </span>
-                </div>
-                <div class="flex items-center gap-2 text-xs text-beige-300">
-                    <span id="statusBadge" class="inline-flex items-center gap-1.5 text-beige-200">
-                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Bağlantı bekleniyor...
-                    </span>
-                    <span class="text-beige-400/50">•</span>
-                    <span id="syncLog" class="text-beige-300/90 truncate max-w-[220px] sm:max-w-xs">Keyifli seyirler ♥</span>
-                </div>
-            </div>
+          <span id="currentTimeText" class="text-xs font-mono text-[#d5bdaf] w-12">00:00</span>
+          <input id="seekBar" type="range" min="0" max="100" value="0" step="1" onchange="onSeekBarChange(this.value)" oninput="onSeekBarDrag(this.value)" class="flex-1 h-2 bg-[#1a050a] rounded-lg cursor-pointer" />
+          <span id="durationText" class="text-xs font-mono text-[#d5bdaf] w-12 text-right">00:00</span>
         </div>
 
-        <!-- Sağ: Romantik Aksiyonlar & Ambiyans -->
-        <div class="flex flex-wrap items-center gap-2">
-            <button onclick="openLoveLetterModal()" class="btn-beige px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="Günün Romantik Notu">
-                <i class="fa-solid fa-envelope-open-text text-burgundy-700"></i>
-                <span>Günün Notu</span>
+        <!-- Kumanda Tuşları ve Emojiler -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <button onclick="triggerPlay()" class="beige-btn px-4 py-2 rounded-xl text-xs flex items-center gap-1">
+              ▶ Oynat
             </button>
-
-            <button onclick="triggerHeartShower(true)" class="btn-burgundy px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="İkinizin ekranına gül ve kalp yağdırır">
-                <span>🌹 Kalp Yağmuru</span>
+            <button onclick="triggerPause()" class="burgundy-btn px-4 py-2 rounded-xl text-xs flex items-center gap-1">
+              ⏸ Duraklat
             </button>
-
-            <button onclick="sendHug()" class="btn-burgundy px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5" title="Sımsıkı sarılma gönder">
-                <span>🤗 Sarıl</span>
+            <button onclick="seekRelative(-10)" class="burgundy-btn px-2.5 py-2 rounded-xl text-xs" title="10 Saniye Geri">
+              ⏪ -10sn
             </button>
-
-            <button onclick="toggleDimMode()" id="dimModeBtn" class="px-3 py-1.5 rounded-xl text-xs font-semibold border border-beige-300/30 bg-burgundy-900/70 text-beige-200 hover:bg-burgundy-800 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-candle-holder text-amber-300"></i>
-                <span id="dimModeText">Loş Sinema</span>
+            <button onclick="seekRelative(10)" class="burgundy-btn px-2.5 py-2 rounded-xl text-xs" title="10 Saniye İleri">
+              +10sn ⏩
             </button>
-        </div>
-    </header>
+            <button onclick="forceSyncNow()" class="burgundy-btn px-3 py-2 rounded-xl text-xs" title="Karşı tarafı kendi saniyene çek">
+              🔄 Bize Eşitle
+            </button>
+          </div>
 
-    <!-- ANA İÇERİK -->
-    <main class="flex-1 max-w-[1440px] w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-        <!-- SOL SÜTUN: VİDEO SAHNESİ VE ORTAK KONTROLLER (8 Sütun) -->
-        <div class="lg:col-span-8 flex flex-col gap-3.5">
-
-            <!-- Video Linki Açma ve Hata 153 Çözücü Mod Seçici Bar -->
-            <div class="burgundy-panel p-3 rounded-2xl flex flex-col gap-2.5 dimmable-ui">
-                <div class="flex flex-wrap gap-2">
-                    <div class="relative flex-1 min-w-[220px]">
-                        <i class="fa-brands fa-youtube absolute left-3.5 top-1/2 -translate-y-1/2 text-beige-300"></i>
-                        <input id="videoUrlInput" type="text" placeholder="YouTube dizi/film/müzik linkini veya MP4 linkini buraya yapıştır..." class="w-full bg-burgundy-950/80 border border-beige-300/30 rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm text-beige-100 placeholder-beige-300/50 focus:outline-none focus:border-beige-300" />
-                    </div>
-                    <button onclick="changeVideoFromInput()" class="btn-beige px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-play"></i> Şimdi Birlikte Aç
-                    </button>
-                    <button onclick="addInputToPlaylist()" class="btn-burgundy px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5" title="Listemize Ekle">
-                        <i class="fa-solid fa-plus"></i> Listeye Ekle
-                    </button>
-                </div>
-
-                <!-- Hızlı Seçim & Oynatıcı Modu (Hata 153 Çözümü) -->
-                <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-beige-300/15 text-xs">
-                    <div class="flex flex-wrap items-center gap-1.5">
-                        <span class="text-beige-300 font-medium mr-1"><i class="fa-solid fa-wand-magic-sparkles text-beige-400"></i> Hazır Sahne:</span>
-                        <button onclick="loadPresetVideo('jfKfPfyJRdk', 'Romantik Gece Lofi Radyo')" class="px-2.5 py-1 rounded-lg bg-burgundy-800/80 hover:bg-burgundy-700 text-beige-200 border border-beige-300/20 transition">
-                            🌙 Lo-Fi Gece
-                        </button>
-                        <button onclick="loadPresetVideo('DWcJFNfaw9c', 'Yağmurlu Akşam Caz & Piyano')" class="px-2.5 py-1 rounded-lg bg-burgundy-800/80 hover:bg-burgundy-700 text-beige-200 border border-beige-300/20 transition">
-                            🎹 Romantik Piyano
-                        </button>
-                        <button onclick="loadPresetVideo('L_LUpnjgPso', 'Şömine Ateşi Sesi & Romantik Ambiyans')" class="px-2.5 py-1 rounded-lg bg-burgundy-800/80 hover:bg-burgundy-700 text-beige-200 border border-beige-300/20 transition">
-                            🔥 Şömine Keyfi
-                        </button>
-                    </div>
-
-                    <!-- Oynatıcı Modu Seçici (Hata 153 Aşma) -->
-                    <div class="flex items-center gap-1 bg-burgundy-950/90 p-1 rounded-xl border border-beige-300/25">
-                        <span class="text-[11px] text-beige-300 px-2">Oynatıcı:</span>
-                        <button id="modeBtn1" onclick="switchPlayerMode('yt-standard')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-beige-200 text-burgundy-900 transition" title="Tam senkronize standart oynatıcı">
-                            Mod 1 (Senkron)
-                        </button>
-                        <button id="modeBtn2" onclick="switchPlayerMode('yt-nocookie')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-beige-300 hover:text-beige-100 transition" title="Hata 153 veren diziler için Engelsiz No-Cookie Mod">
-                            Mod 2 (Hata 153 Çözücü)
-                        </button>
-                        <button id="modeBtn3" onclick="switchPlayerMode('direct-video')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-beige-300 hover:text-beige-100 transition" title="YouTube'da Yeni Sekmede veya Doğrudan MP4 Oynatıcı">
-                            Mod 3 (Alternatif)
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- VİDEO OYNATICI ÇERÇEVESİ -->
-            <div id="videoWrapper" class="relative w-full aspect-video bg-burgundy-950 rounded-3xl overflow-hidden border-2 border-beige-300/35 burgundy-glow transition-all duration-500">
-                <!-- Mod 1: YouTube IFrame API (Tam Senkronize) -->
-                <div id="ytApiContainer" class="w-full h-full">
-                    <div id="player" class="w-full h-full"></div>
-                </div>
-
-                <!-- Mod 2: Engelsiz No-Cookie / Zengin Embed Iframe -->
-                <iframe id="nocookieIframe" class="w-full h-full hidden" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
-                <!-- Mod 3: Alternatif / Doğrudan Video veya Yardımcı Ekran -->
-                <div id="altPlayerContainer" class="w-full h-full hidden flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-burgundy-900 to-burgundy-950">
-                    <video id="html5VideoPlayer" controls class="w-full h-full hidden rounded-2xl"></video>
-                    <div id="ytFallbackCard" class="max-w-md space-y-4">
-                        <div class="w-16 h-16 rounded-full bg-beige-200 text-burgundy-900 flex items-center justify-center mx-auto text-2xl shadow-lg">
-                            <i class="fa-solid fa-film"></i>
-                        </div>
-                        <h3 class="font-romantic text-2xl font-bold text-beige-100">Kanal Sahibi Gömülü Oynatmayı Kısıtlamış</h3>
-                        <p class="text-xs text-beige-200/90 leading-relaxed">
-                            Poyraz Karayel gibi bazı resmi dizi kanalları videoların sadece gerçek bir web adresinde (<code>https://...</code>) veya doğrudan YouTube üzerinde açılmasına izin verir.
-                        </p>
-                        <div class="flex flex-wrap justify-center gap-2 pt-2">
-                            <a id="directYoutubeLink" href="https://www.youtube.com" target="_blank" class="btn-beige px-4 py-2.5 rounded-xl text-xs font-bold inline-flex items-center gap-2">
-                                <i class="fa-brands fa-youtube text-burgundy-700"></i> Videoyu YouTube'da Aç
-                            </a>
-                            <button onclick="switchPlayerMode('yt-nocookie')" class="btn-burgundy px-4 py-2.5 rounded-xl text-xs font-semibold">
-                                Mod 2'yi Dene
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ORTAK KONTROL ÇUBUĞU & UÇUŞAN EMOJİLER -->
-            <div class="burgundy-panel p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3">
-                <!-- Sol: Oynat / Duraklat / Saniye Eşitle -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="manualSyncPlay()" class="btn-beige px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                        <i class="fa-solid fa-play"></i> Oynat
-                    </button>
-                    <button onclick="manualSyncPause()" class="btn-burgundy px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-pause"></i> Duraklat
-                    </button>
-                    <button onclick="seekRelative(-10)" class="px-2.5 py-2 rounded-xl text-xs font-medium bg-burgundy-900/80 hover:bg-burgundy-800 text-beige-200 border border-beige-300/20 transition" title="10 Saniye Geri">
-                        -10sn
-                    </button>
-                    <button onclick="seekRelative(10)" class="px-2.5 py-2 rounded-xl text-xs font-medium bg-burgundy-900/80 hover:bg-burgundy-800 text-beige-200 border border-beige-300/20 transition" title="10 Saniye İleri">
-                        +10sn
-                    </button>
-                    <button onclick="syncCurrentTime()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-burgundy-800 hover:bg-burgundy-700 text-beige-100 border border-beige-300/30 transition flex items-center gap-1.5" title="Diğer ekranı senin bulunduğun saniyeye getirir">
-                        <i class="fa-solid fa-rotate"></i> Süreyi Eşitle (<span id="currentTimeDisplay">00:00</span>)
-                    </button>
-                </div>
-
-                <!-- Sağ: Ekranda Uçuşan Romantik Tepkiler -->
-                <div class="flex items-center gap-1.5 bg-burgundy-950/70 px-3 py-1.5 rounded-2xl border border-beige-300/20">
-                    <span class="text-[11px] text-beige-300 mr-1 hidden sm:inline">Anlık Tepki:</span>
-                    <button onclick="sendEmoji('❤️')" class="text-xl hover:scale-125 transition px-1" title="Kalp Gönder">❤️</button>
-                    <button onclick="sendEmoji('🌹')" class="text-xl hover:scale-125 transition px-1" title="Gül Gönder">🌹</button>
-                    <button onclick="sendEmoji('🥺')" class="text-xl hover:scale-125 transition px-1" title="Duygulandım">🥺</button>
-                    <button onclick="sendEmoji('😂')" class="text-xl hover:scale-125 transition px-1" title="Çok Komik">😂</button>
-                    <button onclick="sendEmoji('🍿')" class="text-xl hover:scale-125 transition px-1" title="Mısır Keyfi">🍿</button>
-                    <button onclick="sendEmoji('😘')" class="text-xl hover:scale-125 transition px-1" title="Öpücük Gönder">😘</button>
-                </div>
-            </div>
+          <!-- Anlık Tepkiler -->
+          <div class="flex items-center gap-2 text-xl bg-[#1a050a]/60 px-3 py-1 rounded-xl border border-[#d5bdaf]/15">
+            <button onclick="sendReaction('❤️')" class="hover:scale-125 transition">❤️</button>
+            <button onclick="sendReaction('🥺')" class="hover:scale-125 transition">🥺</button>
+            <button onclick="sendReaction('😂')" class="hover:scale-125 transition">😂</button>
+            <button onclick="sendReaction('🔥')" class="hover:scale-125 transition">🔥</button>
+            <button onclick="sendReaction('😘')" class="hover:scale-125 transition">😘</button>
+          </div>
         </div>
 
-        <!-- SAĞ SÜTUN: SOHBET & BİRLİKTE İZLENECEKLER LİSTEMİZ (4 Sütun) -->
-        <div class="lg:col-span-4 flex flex-col gap-3.5 h-[560px] lg:h-[640px]">
-            <div class="burgundy-panel rounded-3xl flex-1 flex flex-col overflow-hidden border border-beige-300/25">
-                
-                <!-- Sekme Başlıkları: Sohbet / İzleme Listemiz -->
-                <div class="grid grid-cols-2 p-1.5 bg-burgundy-950/80 border-b border-beige-300/20">
-                    <button id="tabBtnChat" onclick="switchRightTab('chat')" class="py-2 rounded-2xl text-xs font-bold bg-beige-200 text-burgundy-900 shadow transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-comments"></i> Bizim Sohbetimiz
-                    </button>
-                    <button id="tabBtnPlaylist" onclick="switchRightTab('playlist')" class="py-2 rounded-2xl text-xs font-semibold text-beige-300 hover:text-beige-100 transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-list-heart"></i> İzleme Listemiz (<span id="playlistCount">3</span>)
-                    </button>
-                </div>
-
-                <!-- SEKME 1: CANLI SOHBET -->
-                <div id="chatTabContent" class="flex-1 flex flex-col overflow-hidden">
-                    <!-- Romantik Sabit Mini Banner -->
-                    <div onclick="openLoveLetterModal()" class="cursor-pointer bg-gradient-to-r from-burgundy-800 via-burgundy-700 to-burgundy-800 px-3.5 py-2 border-b border-beige-300/20 flex items-center justify-between text-xs text-beige-100 hover:opacity-95 transition">
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="text-base">💌</span>
-                            <span id="miniNoteBanner" class="italic truncate">"Seninle izlediğimiz her sahne benim en güzel anım ♥"</span>
-                        </div>
-                        <span class="text-[10px] bg-beige-200 text-burgundy-900 px-2 py-0.5 rounded-full font-bold shrink-0 ml-2">Oku</span>
-                    </div>
-
-                    <!-- Mesaj Listesi -->
-                    <div id="chatMessages" class="flex-1 p-3.5 overflow-y-auto space-y-2.5 text-sm">
-                        <div class="text-center my-2">
-                            <span class="inline-block px-3 py-1 rounded-full bg-burgundy-900/90 border border-beige-300/25 text-[11px] text-beige-300">
-                                ✨ Esra &amp; Yusuf'un özel sohbet odası
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Hızlı Romantik Mesaj Butonları -->
-                    <div class="px-3 py-1.5 bg-burgundy-950/50 border-t border-beige-300/15 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                        <button onclick="sendQuickChat('Seni çok seviyorum ♥')" class="shrink-0 text-[11px] bg-burgundy-800/90 hover:bg-burgundy-700 text-beige-200 px-2.5 py-1 rounded-full border border-beige-300/25 transition">
-                            Seni çok seviyorum ♥
-                        </button>
-                        <button onclick="sendQuickChat('Çaylar / mısırlar hazır mı? 🍿☕')" class="shrink-0 text-[11px] bg-burgundy-800/90 hover:bg-burgundy-700 text-beige-200 px-2.5 py-1 rounded-full border border-beige-300/25 transition">
-                            Mısırlar hazır mı? 🍿
-                        </button>
-                        <button onclick="sendQuickChat('Bu sahne çok güzelmiş 🥺✨')" class="shrink-0 text-[11px] bg-burgundy-800/90 hover:bg-burgundy-700 text-beige-200 px-2.5 py-1 rounded-full border border-beige-300/25 transition">
-                            Bu sahne çok güzel 🥺
-                        </button>
-                    </div>
-
-                    <!-- Mesaj Yazma Kutusu -->
-                    <form onsubmit="sendChatMessage(event)" class="p-3 bg-burgundy-950/80 border-t border-beige-300/20 flex gap-2">
-                        <input id="chatInput" type="text" placeholder="Esra / Yusuf'a mesaj yaz..." class="flex-1 bg-burgundy-900/70 border border-beige-300/30 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-beige-100 placeholder-beige-300/50 focus:outline-none focus:border-beige-300" />
-                        <button type="submit" class="btn-beige px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1">
-                            <span>Gönder</span> <i class="fa-solid fa-paper-plane text-xs"></i>
-                        </button>
-                    </form>
-                </div>
-
-                <!-- SEKME 2: BİRLİKTE İZLENECEKLER LİSTEMİZ -->
-                <div id="playlistTabContent" class="flex-1 hidden flex-col overflow-hidden p-3.5 space-y-3">
-                    <div class="bg-burgundy-950/60 p-3 rounded-2xl border border-beige-300/20 space-y-2">
-                        <div class="text-xs font-semibold text-beige-200">🎬 Listemize Yeni Dizi / Film / Şarkı Ekle</div>
-                        <input id="playlistTitleInput" type="text" placeholder="Başlık (Örn: Poyraz Karayel Yeni Bölüm)" class="w-full bg-burgundy-900/70 border border-beige-300/30 rounded-xl px-3 py-1.5 text-xs text-beige-100 placeholder-beige-300/50 focus:outline-none" />
-                        <div class="flex gap-2">
-                            <input id="playlistUrlInput" type="text" placeholder="YouTube Linki..." class="flex-1 bg-burgundy-900/70 border border-beige-300/30 rounded-xl px-3 py-1.5 text-xs text-beige-100 placeholder-beige-300/50 focus:outline-none" />
-                            <button onclick="addCustomToPlaylist()" class="btn-beige px-3 py-1.5 rounded-xl text-xs font-bold shrink-0">
-                                + Ekle
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="playlistContainer" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                        <!-- JS ile doldurulur -->
-                    </div>
-                </div>
-
-            </div>
+        <div class="flex items-center justify-between text-[11px] text-[#d5bdaf]/80 border-t border-[#d5bdaf]/10 pt-2">
+          <span id="actionStatus">🎬 Kumanda hazır. İkiniz de videoyu durdurup başlatabilirsiniz.</span>
+          <span id="pingStatus">Senkronizasyon: Aktif</span>
         </div>
-    </main>
+      </div>
 
-    <!-- ALT BİLGİ (FOOTER) -->
-    <footer class="py-3 px-4 text-center text-xs text-beige-300/75 border-t border-beige-300/15 dimmable-ui">
-        <span class="font-romantic italic tracking-wide">Yusuf tarafından Esra için sevgiyle hazırlandı ♥</span>
-    </footer>
+    </div>
 
-    <script>
-        // Protokol kontrolü (file:// veya sandbox uyarısı)
-        if (window.location.protocol === 'file:' || window.location.origin === 'null') {
-            document.getElementById('fileProtocolWarning').classList.remove('hidden');
+    <!-- SAĞ: SOHBET & BİRLİKTE İZLENENLER -->
+    <div class="burgundy-card rounded-2xl flex flex-col h-[520px] lg:h-auto overflow-hidden">
+      <div class="p-3.5 border-b border-[#d5bdaf]/15 flex items-center justify-between">
+        <span class="serif-title font-bold text-base text-[#f5ebe0]">💬 Bizim Sohbetimiz</span>
+        <span id="partnerOnlineDot" class="text-xs text-[#d5bdaf]">Çevrimdışı</span>
+      </div>
+
+      <div id="chatBox" class="flex-1 p-3.5 overflow-y-auto space-y-2.5 text-sm">
+        <div class="text-xs text-center text-[#d5bdaf]/70 italic my-2">
+          Hoş geldiniz! Buradaki mesajlar ve video hareketleri anlık olarak ikiniz arasında senkronize edilir.
+        </div>
+      </div>
+
+      <form onsubmit="sendChat(event)" class="p-3 border-t border-[#d5bdaf]/15 flex gap-2 bg-[#1a050a]/50">
+        <input id="chatInput" type="text" placeholder="Bir şeyler yaz..." class="flex-1 bg-[#1a050a] border border-[#d5bdaf]/25 rounded-xl px-3.5 py-2 text-sm text-[#f5ebe0] focus:outline-none focus:border-[#f5ebe0]" />
+        <button type="submit" class="beige-btn px-4 py-2 rounded-xl text-sm">Gönder</button>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- GÜNÜN NOTU MODAL -->
+  <div id="noteModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="burgundy-card max-w-md w-full rounded-3xl p-6 space-y-4 border border-[#e3d5ca]/40">
+      <h3 class="serif-title text-xl font-bold text-[#f5ebe0]">💌 Özel Not Gönder</h3>
+      <textarea id="noteTextarea" rows="3" placeholder="Esra'ya veya Yusuf'a ekranda açılacak romantik bir not yaz..." class="w-full p-3 rounded-xl bg-[#1a050a] border border-[#d5bdaf]/30 text-[#f5ebe0] text-sm focus:outline-none"></textarea>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeNoteModal()" class="burgundy-btn px-4 py-2 rounded-xl text-xs">Kapat</button>
+        <button onclick="sendLoveNote()" class="beige-btn px-4 py-2 rounded-xl text-xs">Zarfı Gönder 💌</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GELEN NOT / SARILMA POPUP -->
+  <div id="incomingPopup" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
+    <div class="burgundy-card max-w-sm w-full rounded-3xl p-6 text-center space-y-4 border-2 border-[#f5ebe0]/40">
+      <div id="popupIcon" class="text-5xl">💌</div>
+      <h4 id="popupTitle" class="serif-title text-xl font-bold text-[#f5ebe0]">Sana Bir Not Var!</h4>
+      <p id="popupBody" class="text-sm text-[#e3d5ca] italic leading-relaxed"></p>
+      <button onclick="document.getElementById('incomingPopup').classList.add('hidden')" class="beige-btn px-6 py-2 rounded-xl text-xs">❤️ Teşekkür Ederim</button>
+    </div>
+  </div>
+
+  <script>
+    // --- DEĞİŞKENLER ---
+    let player;
+    let isPlayerReady = false;
+    let currentVideoId = 'jfKfPfyJRdk';
+    let myName = 'Yusuf';
+    let isHostUser = true;
+    let roomCode = 'ESRAYUSUF';
+
+    let peer = null;
+    let conn = null;
+    let isDraggingSeek = false;
+
+    // Sonsuz döngüyü önlemek için kilit (Karşıdan gelen komut işlenirken tekrar karşıya gönderme)
+    let isRemoteAction = false;
+    let remoteLockTimer = null;
+
+    function lockRemoteAction() {
+      isRemoteAction = true;
+      if (remoteLockTimer) clearTimeout(remoteLockTimer);
+      remoteLockTimer = setTimeout(() => {
+        isRemoteAction = false;
+      }, 900);
+    }
+
+    // --- 1. YOUTUBE RESMİ IFRAME API KURULUMU ---
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    function onYouTubeIframeAPIReady() {
+      const playerOptions = {
+        height: '100%',
+        width: '100%',
+        videoId: currentVideoId,
+        host: 'https://www.youtube.com',
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          enablejsapi: 1
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError
         }
+      };
 
-        // Durum Değişkenleri
-        let username = 'Yusuf';
-        let isHostRole = true;
-        let roomCode = 'ESRAYUSUF';
-        let currentVideoId = 'jfKfPfyJRdk';
-        let currentVideoTitle = 'Romantik Gece Lofi Radyo';
-        let playerMode = 'yt-standard'; // 'yt-standard' | 'yt-nocookie' | 'direct-video'
+      if (window.location.origin && window.location.origin.startsWith('http')) {
+        playerOptions.playerVars.origin = window.location.origin;
+      }
 
-        let player = null;
-        let isPlayerReady = false;
-        let ignoreNextStateChange = false;
-        let peer = null;
-        let conn = null;
+      player = new YT.Player('player', playerOptions);
+    }
 
-        // Ortak İzleme Listesi
-        let sharedPlaylist = [
-            { id: 'jfKfPfyJRdk', title: '🌙 Lo-Fi Gece & Yağmur Sesi' },
-            { id: 'DWcJFNfaw9c', title: '🎹 Romantik Akşam Piyano Dinletisi' },
-            { id: 'L_LUpnjgPso', title: '🔥 Şömine Ateşi Ambiyansı' }
-        ];
+    function onPlayerReady() {
+      isPlayerReady = true;
+      const iframe = document.getElementById('player');
+      if (iframe) {
+        iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      }
+      // Her saniye ilerleme çubuğunu güncelle
+      setInterval(updateProgressBar, 500);
+    }
 
-        // Giriş ekranında Yusuf / Esra rol seçimi
-        function selectRole(selectedName, isHost) {
-            username = selectedName;
-            isHostRole = isHost;
+    function onPlayerError(e) {
+      updateStatus("⚠️ Bu video YouTube kanal sahibi tarafından dış sitelere kapatılmış olabilir (Hata Kodu: " + e.data + "). Başka bir yükleyicinin linkini deneyin.");
+    }
 
-            const btnYusuf = document.getElementById('roleBtnYusuf');
-            const btnEsra = document.getElementById('roleBtnEsra');
-            const enterBtnText = document.getElementById('enterBtnText');
+    // Tarayıcı Otomatik Oynatma Kilidini Açma
+    function unlockPlayerAudio() {
+      if (!isPlayerReady) return;
+      isRemoteAction = true;
+      player.playVideo();
+      setTimeout(() => {
+        player.pauseVideo();
+        document.getElementById('autoplayUnlockBanner').classList.add('hidden');
+        isRemoteAction = false;
+        updateStatus("🔊 Tarayıcı ses ve otomatik oynatma kilidi açıldı!");
+      }, 300);
+    }
 
-            if (isHost) {
-                btnYusuf.className = "p-4 rounded-2xl border-2 border-beige-200 bg-burgundy-700/80 text-beige-100 flex flex-col items-center gap-1.5 transition scale-[1.02] shadow-lg";
-                btnEsra.className = "p-4 rounded-2xl border border-beige-300/30 bg-burgundy-900/50 text-beige-300 flex flex-col items-center gap-1.5 transition opacity-80";
-                enterBtnText.innerText = "Yusuf Olarak Köşemizi Aç";
-            } else {
-                btnEsra.className = "p-4 rounded-2xl border-2 border-beige-200 bg-burgundy-700/80 text-beige-100 flex flex-col items-center gap-1.5 transition scale-[1.02] shadow-lg";
-                btnYusuf.className = "p-4 rounded-2xl border border-beige-300/30 bg-burgundy-900/50 text-beige-300 flex flex-col items-center gap-1.5 transition opacity-80";
-                enterBtnText.innerText = "Esra Olarak Yusuf'a Katıl";
-            }
-        }
+    // --- 2. YOUTUBE DURUMU DEĞİŞTİĞİNDE KARŞI TARAFA HABER VER ---
+    function onPlayerStateChange(event) {
+      if (!isPlayerReady) return;
 
-        function enterOurCorner() {
-            startRoom(isHostRole);
-        }
+      // Eğer bu değişim karşı taraftan gelen komut yüzünden olduysa geri gönderme!
+      if (isRemoteAction) return;
 
-        // 1. YouTube IFrame API Yükleme
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
+      const currentTime = player.getCurrentTime();
 
-        function onYouTubeIframeAPIReady() {
-            const playerConfig = {
-                height: '100%',
-                width: '100%',
-                videoId: currentVideoId,
-                host: 'https://www.youtube.com',
-                playerVars: {
-                    autoplay: 0,
-                    controls: 1,
-                    rel: 0,
-                    modestbranding: 1,
-                    playsinline: 1
-                },
-                events: {
-                    onReady: () => {
-                        isPlayerReady = true;
-                        const iframe = document.getElementById('player');
-                        if (iframe) {
-                            iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-                        }
-                        startTimerDisplayLoop();
-                    },
-                    onStateChange: onPlayerStateChange,
-                    onError: onPlayerError
-                }
-            };
+      if (event.data === YT.PlayerState.PLAYING) {
+        sendToPartner({
+          type: 'SYNC_STATE',
+          state: 'PLAY',
+          time: currentTime,
+          sender: myName
+        });
+        updateStatus(`▶ ${myName} videoyu başlattı (${formatTime(currentTime)})`);
+      } 
+      else if (event.data === YT.PlayerState.PAUSED) {
+        sendToPartner({
+          type: 'SYNC_STATE',
+          state: 'PAUSE',
+          time: currentTime,
+          sender: myName
+        });
+        updateStatus(`⏸ ${myName} videoyu duraklattı (${formatTime(currentTime)})`);
+      }
+    }
 
-            if (window.location.origin && window.location.origin.startsWith('http')) {
-                playerConfig.playerVars.origin = window.location.origin;
-            }
+    // --- 3. MANUEL KUMANDA TUŞLARI (HER İKİ TARAF İÇİN KESİN ÇALIŞIR) ---
+    function triggerPlay() {
+      if (!isPlayerReady) return;
+      const t = player.getCurrentTime();
+      lockRemoteAction();
+      player.playVideo();
+      sendToPartner({
+        type: 'SYNC_STATE',
+        state: 'PLAY',
+        time: t,
+        sender: myName
+      });
+      updateStatus(`▶ ${myName} videoyu başlattı (${formatTime(t)})`);
+    }
 
-            player = new YT.Player('player', playerConfig);
-        }
+    function triggerPause() {
+      if (!isPlayerReady) return;
+      const t = player.getCurrentTime();
+      lockRemoteAction();
+      player.pauseVideo();
+      sendToPartner({
+        type: 'SYNC_STATE',
+        state: 'PAUSE',
+        time: t,
+        sender: myName
+      });
+      updateStatus(`⏸ ${myName} videoyu duraklattı (${formatTime(t)})`);
+    }
 
-        // YouTube Hata 150 / 153 Yakalayıcı -> Otomatik Mod 2'ye Geçiş Desteği
-        function onPlayerError(event) {
-            updateLog("⚠️ Bu dizi/video Hata 153 verdi, Engelsiz Mod 2'ye geçiliyor...");
-            switchPlayerMode('yt-nocookie');
-        }
+    function seekRelative(seconds) {
+      if (!isPlayerReady) return;
+      const newTime = Math.max(0, player.getCurrentTime() + seconds);
+      lockRemoteAction();
+      player.seekTo(newTime, true);
+      const currentState = player.getPlayerState() === YT.PlayerState.PLAYING ? 'PLAY' : 'PAUSE';
+      sendToPartner({
+        type: 'SYNC_STATE',
+        state: currentState,
+        time: newTime,
+        sender: myName
+      });
+      updateStatus(`⏩ ${myName} süreyi ${formatTime(newTime)} noktasına sardı`);
+    }
 
-        function startTimerDisplayLoop() {
-            setInterval(() => {
-                if (isPlayerReady && player && typeof player.getCurrentTime === 'function' && playerMode === 'yt-standard') {
-                    const sec = player.getCurrentTime() || 0;
-                    document.getElementById('currentTimeDisplay').innerText = formatTime(sec);
-                }
-            }, 1000);
-        }
+    function forceSyncNow() {
+      if (!isPlayerReady) return;
+      const t = player.getCurrentTime();
+      const currentState = player.getPlayerState() === YT.PlayerState.PLAYING ? 'PLAY' : 'PAUSE';
+      sendToPartner({
+        type: 'SYNC_STATE',
+        state: currentState,
+        time: t,
+        sender: myName
+      });
+      updateStatus(`🔄 ${myName} iki ekranın süresini eşitledi (${formatTime(t)})`);
+    }
 
-        // 2. Oynatıcı Durumu Değiştiğinde Karşı Tarafa Gönder
-        function onPlayerStateChange(event) {
-            if (ignoreNextStateChange) {
-                ignoreNextStateChange = false;
-                return;
-            }
-            if (!conn || !conn.open) return;
+    function onSeekBarDrag(val) {
+      isDraggingSeek = true;
+      document.getElementById('currentTimeText').innerText = formatTime(val);
+    }
 
-            const currentTime = player.getCurrentTime();
-            if (event.data === YT.PlayerState.PLAYING) {
-                sendData({ type: 'PLAY', time: currentTime, user: username });
-                updateLog(`${username} videoyu başlattı (${formatTime(currentTime)})`);
-            } else if (event.data === YT.PlayerState.PAUSED) {
-                sendData({ type: 'PAUSE', time: currentTime, user: username });
-                updateLog(`${username} videoyu duraklattı (${formatTime(currentTime)})`);
-            }
-        }
+    function onSeekBarChange(val) {
+      isDraggingSeek = false;
+      if (!isPlayerReady) return;
+      const targetTime = parseFloat(val);
+      lockRemoteAction();
+      player.seekTo(targetTime, true);
+      const currentState = player.getPlayerState() === YT.PlayerState.PLAYING ? 'PLAY' : 'PAUSE';
+      sendToPartner({
+        type: 'SYNC_STATE',
+        state: currentState,
+        time: targetTime,
+        sender: myName
+      });
+      updateStatus(`🎯 ${myName} videoyu ${formatTime(targetTime)} dakikasına sardı`);
+    }
 
-        // 3. Oynatıcı Modu Değiştirme (Hata 153 Çözücü)
-        function switchPlayerMode(mode, broadcast = true) {
-            playerMode = mode;
-            const ytApiContainer = document.getElementById('ytApiContainer');
-            const nocookieIframe = document.getElementById('nocookieIframe');
-            const altPlayerContainer = document.getElementById('altPlayerContainer');
+    function updateProgressBar() {
+      if (!isPlayerReady || isDraggingSeek || typeof player.getCurrentTime !== 'function') return;
+      const current = player.getCurrentTime() || 0;
+      const duration = player.getDuration() || 0;
+      const seekBar = document.getElementById('seekBar');
+      if (duration > 0) {
+        seekBar.max = Math.floor(duration);
+        seekBar.value = Math.floor(current);
+        document.getElementById('currentTimeText').innerText = formatTime(current);
+        document.getElementById('durationText').innerText = formatTime(duration);
+      }
+    }
 
-            const m1 = document.getElementById('modeBtn1');
-            const m2 = document.getElementById('modeBtn2');
-            const m3 = document.getElementById('modeBtn3');
+    // --- 4. PEERJS ÇİFT YÖNLÜ ODA VE BAĞLANTI SİSTEMİ ---
+    function joinCinema(selectedName, isHost) {
+      myName = selectedName;
+      isHostUser = isHost;
+      roomCode = (document.getElementById('roomInput').value.trim() || 'ESRAYUSUF')
+                  .toUpperCase()
+                  .replace(/[^A-Z0-9]/g, '');
 
-            [m1, m2, m3].forEach(btn => {
-                btn.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold text-beige-300 hover:text-beige-100 transition";
+      document.getElementById('loginModal').classList.add('hidden');
+      document.getElementById('autoplayUnlockBanner').classList.remove('hidden');
+      document.getElementById('userBadge').innerText = `${myName} • #${roomCode}`;
+
+      // İlk tıklamada ses kilidini açmayı dene
+      if (isPlayerReady) {
+        unlockPlayerAudio();
+      }
+
+      const hostId = `ey-cinema-${roomCode}-host`;
+
+      if (isHost) {
+        peer = new Peer(hostId);
+        peer.on('open', () => {
+          setConnBadge('⏳ Esra bekleniyor...', 'amber');
+        });
+        peer.on('connection', (incomingConn) => {
+          conn = incomingConn;
+          bindConnectionEvents();
+        });
+        peer.on('error', (err) => {
+          if (err.type === 'unavailable-id') {
+            // Eğer Host zaten açıksa otomatik Guest olarak bağlan!
+            connectAsGuest(hostId);
+          } else {
+            updateStatus('Bağlantı uyarısı: ' + err.type);
+          }
+        });
+      } else {
+        connectAsGuest(hostId);
+      }
+    }
+
+    function connectAsGuest(hostId) {
+      peer = new Peer();
+      peer.on('open', () => {
+        setConnBadge('🔄 Odaya bağlanılıyor...', 'amber');
+        conn = peer.connect(hostId, { reliable: true });
+        bindConnectionEvents();
+      });
+    }
+
+    function bindConnectionEvents() {
+      conn.on('open', () => {
+        setConnBadge('🟢 İkiniz de Odadasınız (Canlı Senkron Aktif)', 'green');
+        document.getElementById('partnerOnlineDot').innerText = '🟢 Karşı Taraf Çevrimiçi';
+        addChatMessage('Sistem', `💞 ${myName} odaya katıldı! Artık ikiniz de videoyu yönetebilirsiniz.`, true);
+
+        // Mevcut videoyu ve saniyeyi yeni gelene gönder
+        if (isPlayerReady && isHostUser) {
+          setTimeout(() => {
+            sendToPartner({
+              type: 'CHANGE_VIDEO',
+              videoId: currentVideoId,
+              time: player.getCurrentTime() || 0,
+              state: player.getPlayerState() === YT.PlayerState.PLAYING ? 'PLAY' : 'PAUSE',
+              sender: myName
             });
+          }, 800);
+        }
+      });
 
-            if (mode === 'yt-standard') {
-                m1.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-beige-200 text-burgundy-900 transition";
-                ytApiContainer.classList.remove('hidden');
-                nocookieIframe.classList.add('hidden');
-                altPlayerContainer.classList.add('hidden');
-                nocookieIframe.src = '';
-                if (isPlayerReady && currentVideoId) {
-                    player.loadVideoById(currentVideoId);
-                }
-            } else if (mode === 'yt-nocookie') {
-                m2.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-beige-200 text-burgundy-900 transition";
-                if (isPlayerReady && player && player.pauseVideo) player.pauseVideo();
-                ytApiContainer.classList.add('hidden');
-                nocookieIframe.classList.remove('hidden');
-                altPlayerContainer.classList.add('hidden');
-                nocookieIframe.src = `https://www.youtube-nocookie.com/embed/${currentVideoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-            } else {
-                m3.className = "px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-beige-200 text-burgundy-900 transition";
-                if (isPlayerReady && player && player.pauseVideo) player.pauseVideo();
-                nocookieIframe.src = '';
-                ytApiContainer.classList.add('hidden');
-                nocookieIframe.classList.add('hidden');
-                altPlayerContainer.classList.remove('hidden');
-                document.getElementById('directYoutubeLink').href = `https://www.youtube.com/watch?v=${currentVideoId}`;
-            }
+      conn.on('data', (data) => {
+        handlePartnerCommand(data);
+      });
 
-            if (broadcast) {
-                sendData({ type: 'SWITCH_MODE', mode: mode, videoId: currentVideoId, user: username });
-            }
+      conn.on('close', () => {
+        setConnBadge('🔴 Bağlantı koptu, yenileyin', 'red');
+        document.getElementById('partnerOnlineDot').innerText = '🔴 Çevrimdışı';
+      });
+    }
+
+    function sendToPartner(payload) {
+      if (conn && conn.open) {
+        conn.send(payload);
+      }
+    }
+
+    // --- 5. KARŞI TARAFTAN GELEN KOMUTLARI UYGULAMA ---
+    function handlePartnerCommand(data) {
+      if (!isPlayerReady) return;
+
+      if (data.type === 'SYNC_STATE') {
+        lockRemoteAction();
+        const myTime = player.getCurrentTime() || 0;
+
+        // Aradaki fark 1 saniyeden fazlaysa tam o saniyeye git
+        if (Math.abs(myTime - data.time) > 1.0) {
+          player.seekTo(data.time, true);
         }
 
-        // 4. Oda Kurma / Katılma (PeerJS P2P)
-        function startRoom(isHost) {
-            roomCode = (document.getElementById('roomInput').value.trim() || 'ESRAYUSUF').toUpperCase().replace(/[^A-Z0-9]/g, '');
-
-            document.getElementById('loginModal').classList.add('hidden');
-            document.getElementById('roomBadge').innerText = `${username} • #${roomCode}`;
-
-            const hostPeerId = `esra-yusuf-corner-${roomCode}-host`;
-
-            if (isHost) {
-                peer = new Peer(hostPeerId);
-                peer.on('open', () => {
-                    setStatus('Esra\'nın katılması bekleniyor...', 'amber');
-                });
-                peer.on('connection', (connection) => {
-                    conn = connection;
-                    setupConnection();
-                });
-                peer.on('error', () => {
-                    // Eğer host ID zaten açıksa otomatik misafir olarak bağlanmayı dene
-                    peer = new Peer();
-                    peer.on('open', () => {
-                        conn = peer.connect(hostPeerId);
-                        setupConnection();
-                    });
-                });
-            } else {
-                peer = new Peer();
-                peer.on('open', () => {
-                    setStatus('Yusuf\'un odasına bağlanılıyor...', 'amber');
-                    conn = peer.connect(hostPeerId);
-                    setupConnection();
-                });
-            }
+        if (data.state === 'PLAY') {
+          player.playVideo();
+          updateStatus(`▶ ${data.sender} videoyu başlattı (${formatTime(data.time)})`);
+        } else if (data.state === 'PAUSE') {
+          player. seekTo(data.time, true);
+          player.pauseVideo();
+          updateStatus(`⏸ ${data.sender} videoyu duraklattı (${formatTime(data.time)})`);
         }
-
-        function setupConnection() {
-            conn.on('open', () => {
-                const partnerName = username === 'Yusuf' ? 'Esra' : 'Yusuf';
-                setStatus(`♥ ${partnerName} ile Bağlandınız`, 'green');
-                appendChat('Sistem', `${username} köşemize katıldı ♥`, true);
-                triggerHeartShower(false);
-
-                if (isPlayerReady) {
-                    sendData({
-                        type: 'SYNC_STATE',
-                        videoId: currentVideoId,
-                        playlist: sharedPlaylist,
-                        mode: playerMode,
-                        user: username
-                    });
-                }
-            });
-
-            conn.on('data', (data) => {
-                handleIncomingData(data);
-            });
-
-            conn.on('close', () => {
-                setStatus('Bağlantı koptu, tekrar bekleniyor...', 'red');
-            });
-        }
-
-        function sendData(payload) {
-            if (conn && conn.open) {
-                conn.send(payload);
-            }
-        }
-
-        // 5. Karşı Taraftan Gelen Verileri İşleme
-        function handleIncomingData(data) {
-            if (data.type === 'PLAY' && isPlayerReady) {
-                ignoreNextStateChange = true;
-                if (Math.abs(player.getCurrentTime() - data.time) > 1.5) {
-                    player.seekTo(data.time, true);
-                }
-                player.playVideo();
-                updateLog(`▶ ${data.user} videoyu başlattı (${formatTime(data.time)})`);
-            } 
-            else if (data.type === 'PAUSE' && isPlayerReady) {
-                ignoreNextStateChange = true;
-                player.seekTo(data.time, true);
-                player.pauseVideo();
-                updateLog(`⏸ ${data.user} videoyu duraklattı (${formatTime(data.time)})`);
-            } 
-            else if (data.type === 'SEEK' && isPlayerReady) {
-                ignoreNextStateChange = true;
-                player.seekTo(data.time, true);
-                updateLog(`⏩ ${data.user} süreyi ${formatTime(data.time)} yaptı`);
-            }
-            else if (data.type === 'CHANGE_VIDEO') {
-                currentVideoId = data.videoId;
-                loadVideoByCurrentMode(currentVideoId);
-                updateLog(`🎬 ${data.user} yeni bir sahne açtı`);
-            }
-            else if (data.type === 'SWITCH_MODE') {
-                currentVideoId = data.videoId || currentVideoId;
-                switchPlayerMode(data.mode, false);
-                updateLog(`🔄 ${data.user} oynatıcı modunu değiştirdi`);
-            }
-            else if (data.type === 'SYNC_STATE') {
-                currentVideoId = data.videoId;
-                if (data.playlist) {
-                    sharedPlaylist = data.playlist;
-                    renderPlaylist();
-                }
-                if (data.mode && data.mode !== playerMode) {
-                    switchPlayerMode(data.mode, false);
-                } else {
-                    loadVideoByCurrentMode(currentVideoId);
-                }
-            }
-            else if (data.type === 'PLAYLIST_UPDATE') {
-                sharedPlaylist = data.playlist;
-                renderPlaylist();
-                updateLog(`📝 ${data.user} izleme listemizi güncelledi`);
-            }
-            else if (data.type === 'CHAT') {
-                appendChat(data.user, data.text, false);
-            } 
-            else if (data.type === 'EMOJI') {
-                spawnEmoji(data.emoji);
-            }
-            else if (data.type === 'HEART_SHOWER') {
-                triggerHeartShower(false);
-                updateLog(`🌹 ${data.user} kalp ve gül yağmuru gönderdi!`);
-            }
-            else if (data.type === 'HUG') {
-                showHugNotification(data.user);
-            }
-            else if (data.type === 'LOVE_LETTER') {
-                displayIncomingLoveLetter(data.user, data.note);
-            }
-        }
-
-        function loadVideoByCurrentMode(vid) {
-            if (playerMode === 'yt-standard' && isPlayerReady) {
-                ignoreNextStateChange = true;
-                player.loadVideoById(vid);
-            } else if (playerMode === 'yt-nocookie') {
-                document.getElementById('nocookieIframe').src = `https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-            } else {
-                document.getElementById('directYoutubeLink').href = `https://www.youtube.com/watch?v=${vid}`;
-            }
-        }
-
-        // 6. Video ve Kontroller
-        function extractVideoID(input) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
-            const match = input.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : (input.length === 11 ? input : null);
-        }
-
-        function changeVideoFromInput() {
-            const raw = document.getElementById('videoUrlInput').value.trim();
-            if (!raw) return;
-
-            // Doğrudan MP4 video dosyası kontrolü
-            if (raw.endsWith('.mp4') || raw.endsWith('.webm')) {
-                switchPlayerMode('direct-video', true);
-                const vPlayer = document.getElementById('html5VideoPlayer');
-                document.getElementById('ytFallbackCard').classList.add('hidden');
-                vPlayer.classList.remove('hidden');
-                vPlayer.src = raw;
-                vPlayer.play();
-                return;
-            }
-
-            const vid = extractVideoID(raw);
-            if (!vid) {
-                updateLog('⚠️ Lütfen geçerli bir YouTube linki yapıştırın');
-                return;
-            }
-            currentVideoId = vid;
-            loadVideoByCurrentMode(vid);
-            sendData({ type: 'CHANGE_VIDEO', videoId: vid, user: username });
-            updateLog(`${username} yeni bir video açtı`);
-            document.getElementById('videoUrlInput').value = '';
-        }
-
-        function loadPresetVideo(vid, title) {
-            currentVideoId = vid;
-            currentVideoTitle = title;
-            loadVideoByCurrentMode(vid);
-            sendData({ type: 'CHANGE_VIDEO', videoId: vid, user: username });
-            updateLog(`✨ ${title} açıldı`);
-        }
-
-        function manualSyncPlay() {
-            if (!isPlayerReady || playerMode !== 'yt-standard') return;
-            const t = player.getCurrentTime();
-            player.playVideo();
-            sendData({ type: 'PLAY', time: t, user: username });
-        }
-
-        function manualSyncPause() {
-            if (!isPlayerReady || playerMode !== 'yt-standard') return;
-            const t = player.getCurrentTime();
+      }
+      else if (data.type === 'CHANGE_VIDEO') {
+        lockRemoteAction();
+        currentVideoId = data.videoId;
+        player.loadVideoById({
+          videoId: currentVideoId,
+          startSeconds: data.time || 0
+        });
+        if (data.state === 'PAUSE') {
+          setTimeout(() => {
+            lockRemoteAction();
             player.pauseVideo();
-            sendData({ type: 'PAUSE', time: t, user: username });
+          }, 600);
         }
+        updateStatus(`🎬 ${data.sender} yeni bir video açtı!`);
+        addChatMessage('Sistem', `🎬 ${data.sender} yeni bir sahne açtı.`, true);
+      }
+      else if (data.type === 'CHAT') {
+        addChatMessage(data.sender, data.text, false);
+      }
+      else if (data.type === 'REACTION') {
+        spawnFloatingEmoji(data.emoji);
+      }
+      else if (data.type === 'ROSE_RAIN') {
+        triggerRoseRainEffect();
+        updateStatus(`🌹 ${data.sender} ekrana güller yağdırdı!`);
+      }
+      else if (data.type === 'HUG') {
+        showPopup('🤗', `${data.sender} Sana Sımsıkı Sarıldı!`, `"Şu an yanında olamasam da kalbim tam yanında..."`);
+        spawnFloatingEmoji('🤗');
+        spawnFloatingEmoji('❤️');
+      }
+      else if (data.type === 'LOVE_NOTE') {
+        showPopup('💌', `${data.sender}'dan Sana Özel Not`, data.note);
+        triggerRoseRainEffect();
+      }
+    }
 
-        function seekRelative(deltaSeconds) {
-            if (!isPlayerReady || playerMode !== 'yt-standard') return;
-            const newTime = Math.max(0, player.getCurrentTime() + deltaSeconds);
-            player.seekTo(newTime, true);
-            sendData({ type: 'SEEK', time: newTime, user: username });
-            updateLog(`${username} süreyi ${formatTime(newTime)} yaptı`);
-        }
+    // --- 6. VİDEO DEĞİŞTİRME ---
+    function extractYouTubeId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : (url.length === 11 ? url : null);
+    }
 
-        function syncCurrentTime() {
-            if (!isPlayerReady || playerMode !== 'yt-standard') return;
-            const t = player.getCurrentTime();
-            sendData({ type: 'PLAY', time: t, user: username });
-            updateLog(`🔄 Süre ikiniz için eşitlendi (${formatTime(t)})`);
-        }
+    function loadNewVideo() {
+      const raw = document.getElementById('videoUrlInput').value.trim();
+      const vid = extractYouTubeId(raw);
+      if (!vid) {
+        alert('Lütfen geçerli bir YouTube video linki yapıştırın.');
+        return;
+      }
+      changeVideoById(vid);
+      document.getElementById('videoUrlInput').value = '';
+    }
 
-        // 7. Romantik Özellikler (Günün Notu, Kalp Yağmuru, Sarılma, Loş Mod)
-        function openLoveLetterModal() {
-            document.getElementById('loveLetterModal').classList.remove('hidden');
-        }
+    function changeVideoById(vid) {
+      if (!isPlayerReady) return;
+      currentVideoId = vid;
+      lockRemoteAction();
+      player.loadVideoById(vid);
+      sendToPartner({
+        type: 'CHANGE_VIDEO',
+        videoId: vid,
+        time: 0,
+        state: 'PLAY',
+        sender: myName
+      });
+      updateStatus(`🎬 ${myName} yeni bir video açtı.`);
+    }
 
-        function closeLoveLetterModal() {
-            document.getElementById('loveLetterModal').classList.add('hidden');
-        }
+    // --- 7. SOHBET VE ROMANTİK ÖZELLİKLER ---
+    function sendChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      addChatMessage(myName, text, false);
+      sendToPartner({ type: 'CHAT', sender: myName, text: text });
+      input.value = '';
+    }
 
-        function fillPresetNote(text) {
-            document.getElementById('newLoveNoteInput').value = text;
-        }
+    function addChatMessage(sender, text, isSystem) {
+      const box = document.getElementById('chatBox');
+      const div = document.createElement('div');
+      if (isSystem) {
+        div.className = "text-xs text-center text-[#e3d5ca] bg-[#1a050a]/60 py-1.5 px-3 rounded-full my-1 border border-[#d5bdaf]/15";
+        div.innerText = text;
+      } else {
+        const isMe = sender === myName;
+        div.className = `p-2.5 rounded-2xl max-w-[82%] ${
+          isMe 
+            ? 'bg-gradient-to-r from-[#801b34] to-[#520e1f] text-[#f5ebe0] ml-auto rounded-br-none border border-[#e3d5ca]/20' 
+            : 'bg-[#1a050a]/90 text-[#f5ebe0] mr-auto rounded-bl-none border border-[#d5bdaf]/25'
+        }`;
+        div.innerHTML = `<div class="text-[10px] font-bold text-[#d5bdaf] mb-0.5">${sender}</div><div class="leading-snug">${text}</div>`;
+      }
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
 
-        function sendLoveLetter() {
-            const noteInput = document.getElementById('newLoveNoteInput');
-            const noteText = noteInput.value.trim();
-            if (!noteText) return;
+    function sendReaction(emoji) {
+      spawnFloatingEmoji(emoji);
+      sendToPartner({ type: 'REACTION', emoji: emoji });
+    }
 
-            displayIncomingLoveLetter(username, noteText);
-            sendData({ type: 'LOVE_LETTER', user: username, note: noteText });
-            noteInput.value = '';
-        }
+    function spawnFloatingEmoji(emoji) {
+      const el = document.createElement('div');
+      el.className = 'floating-item';
+      el.innerText = emoji;
+      el.style.left = Math.floor(Math.random() * 80 + 10) + '%';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2600);
+    }
 
-        function displayIncomingLoveLetter(sender, noteText) {
-            const receiver = sender === 'Yusuf' ? 'Esra' : 'Yusuf';
-            document.getElementById('letterAuthorLabel').innerText = `${sender} tarafından ${receiver} için yazıldı ♥`;
-            document.getElementById('loveLetterContent').innerText = `"${noteText}"`;
-            document.getElementById('miniNoteBanner').innerText = `"${noteText}"`;
-            openLoveLetterModal();
-            triggerHeartShower(false);
-        }
+    function sendRoseRain() {
+      triggerRoseRainEffect();
+      sendToPartner({ type: 'ROSE_RAIN', sender: myName });
+    }
 
-        function triggerHeartShower(broadcast = true) {
-            const symbols = ['🌹', '❤️', '✨', '🤍', '🍷'];
-            for (let i = 0; i < 22; i++) {
-                setTimeout(() => {
-                    const el = document.createElement('div');
-                    el.className = 'falling-petal';
-                    el.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                    el.style.left = Math.floor(Math.random() * 94 + 3) + 'vw';
-                    el.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                    document.body.appendChild(el);
-                    setTimeout(() => el.remove(), 5000);
-                }, i * 110);
-            }
-            if (broadcast) {
-                sendData({ type: 'HEART_SHOWER', user: username });
-            }
-        }
+    function triggerRoseRainEffect() {
+      const items = ['🌹', '🥀', '❤️', '✨'];
+      for (let i = 0; i < 14; i++) {
+        setTimeout(() => {
+          const item = items[Math.floor(Math.random() * items.length)];
+          spawnFloatingEmoji(item);
+        }, i * 130);
+      }
+    }
 
-        function sendHug() {
-            showHugNotification(username);
-            sendData({ type: 'HUG', user: username });
-            appendChat('Sistem', `🤗 ${username} sımsıkı sarıldı!`, true);
-        }
+    function sendHug() {
+      spawnFloatingEmoji('🤗');
+      sendToPartner({ type: 'HUG', sender: myName });
+      updateStatus(`🤗 ${myName} sımsıkı sarıldı!`);
+    }
 
-        function showHugNotification(sender) {
-            const overlay = document.getElementById('hugOverlay');
-            const title = document.getElementById('hugOverlayTitle');
-            title.innerText = `${sender} sana sımsıkı sarıldı!`;
-            overlay.classList.remove('hidden');
-            spawnEmoji('🤗');
-            spawnEmoji('❤️');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-            }, 3000);
-        }
+    function openNoteModal() {
+      document.getElementById('noteModal').classList.remove('hidden');
+    }
 
-        function toggleDimMode() {
-            document.body.classList.toggle('ambiance-dim');
-            const isDim = document.body.classList.contains('ambiance-dim');
-            document.getElementById('dimModeText').innerText = isDim ? 'Işıkları Aç' : 'Loş Sinema';
-        }
+    function closeNoteModal() {
+      document.getElementById('noteModal').classList.add('hidden');
+    }
 
-        // 8. Sohbet & Ortak Liste (Playlist)
-        function switchRightTab(tab) {
-            const chatTab = document.getElementById('chatTabContent');
-            const playlistTab = document.getElementById('playlistTabContent');
-            const btnChat = document.getElementById('tabBtnChat');
-            const btnPlaylist = document.getElementById('tabBtnPlaylist');
+    function sendLoveNote() {
+      const note = document.getElementById('noteTextarea').value.trim();
+      if (!note) return;
+      sendToPartner({ type: 'LOVE_NOTE', sender: myName, note: note });
+      closeNoteModal();
+      document.getElementById('noteTextarea').value = '';
+      updateStatus(`💌 Özel notun karşı tarafa gönderildi!`);
+    }
 
-            if (tab === 'chat') {
-                chatTab.classList.remove('hidden');
-                playlistTab.classList.add('hidden');
-                playlistTab.classList.remove('flex');
-                btnChat.className = "py-2 rounded-2xl text-xs font-bold bg-beige-200 text-burgundy-900 shadow transition flex items-center justify-center gap-1.5";
-                btnPlaylist.className = "py-2 rounded-2xl text-xs font-semibold text-beige-300 hover:text-beige-100 transition flex items-center justify-center gap-1.5";
-            } else {
-                chatTab.classList.add('hidden');
-                playlistTab.classList.remove('hidden');
-                playlistTab.classList.add('flex');
-                btnPlaylist.className = "py-2 rounded-2xl text-xs font-bold bg-beige-200 text-burgundy-900 shadow transition flex items-center justify-center gap-1.5";
-                btnChat.className = "py-2 rounded-2xl text-xs font-semibold text-beige-300 hover:text-beige-100 transition flex items-center justify-center gap-1.5";
-                renderPlaylist();
-            }
-        }
+    function showPopup(icon, title, body) {
+      document.getElementById('popupIcon').innerText = icon;
+      document.getElementById('popupTitle').innerText = title;
+      document.getElementById('popupBody').innerText = body;
+      document.getElementById('incomingPopup').classList.remove('hidden');
+    }
 
-        function renderPlaylist() {
-            const container = document.getElementById('playlistContainer');
-            document.getElementById('playlistCount').innerText = sharedPlaylist.length;
-            container.innerHTML = '';
+    function setConnBadge(text, type) {
+      const el = document.getElementById('connStatus');
+      el.innerText = text;
+      if (type === 'green') {
+        el.className = 'text-xs px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/40';
+      } else if (type === 'red') {
+        el.className = 'text-xs px-3 py-1 rounded-full bg-rose-950 text-rose-300 border border-rose-500/40';
+      } else {
+        el.className = 'text-xs px-3 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-600/30';
+      }
+    }
 
-            sharedPlaylist.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = "p-2.5 rounded-2xl bg-burgundy-900/70 border border-beige-300/20 flex items-center justify-between gap-2 hover:border-beige-300/50 transition";
-                row.innerHTML = `
-                    <div class="flex items-center gap-2.5 truncate">
-                        <span class="w-6 h-6 rounded-full bg-beige-200 text-burgundy-900 text-xs font-bold flex items-center justify-center shrink-0">${index + 1}</span>
-                        <span class="text-xs text-beige-100 font-medium truncate">${item.title}</span>
-                    </div>
-                    <div class="flex items-center gap-1 shrink-0">
-                        <button onclick="playFromPlaylist('${item.id}', '${item.title.replace(/'/g, "")}')" class="btn-beige px-2.5 py-1 rounded-lg text-[11px] font-bold">
-                            Oynat
-                        </button>
-                        <button onclick="removeFromPlaylist(${index})" class="px-2 py-1 rounded-lg text-xs text-beige-300 hover:text-red-300">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
+    function updateStatus(msg) {
+      document.getElementById('actionStatus').innerText = msg;
+    }
 
-        function playFromPlaylist(vid, title) {
-            loadPresetVideo(vid, title);
-        }
-
-        function addInputToPlaylist() {
-            const raw = document.getElementById('videoUrlInput').value.trim();
-            const vid = extractVideoID(raw);
-            if (!vid) {
-                updateLog('⚠️ Listeye eklemek için geçerli bir YouTube linki girin');
-                return;
-            }
-            sharedPlaylist.push({ id: vid, title: `🎬 Eklenen Sahne (${vid})` });
-            renderPlaylist();
-            sendData({ type: 'PLAYLIST_UPDATE', playlist: sharedPlaylist, user: username });
-            document.getElementById('videoUrlInput').value = '';
-            switchRightTab('playlist');
-        }
-
-        function addCustomToPlaylist() {
-            const titleInput = document.getElementById('playlistTitleInput');
-            const urlInput = document.getElementById('playlistUrlInput');
-            const vid = extractVideoID(urlInput.value.trim());
-            if (!vid) return;
-
-            const title = titleInput.value.trim() || `🎬 Özel Video (${vid})`;
-            sharedPlaylist.push({ id: vid, title: title });
-            renderPlaylist();
-            sendData({ type: 'PLAYLIST_UPDATE', playlist: sharedPlaylist, user: username });
-            titleInput.value = '';
-            urlInput.value = '';
-        }
-
-        function removeFromPlaylist(index) {
-            sharedPlaylist.splice(index, 1);
-            renderPlaylist();
-            sendData({ type: 'PLAYLIST_UPDATE', playlist: sharedPlaylist, user: username });
-        }
-
-        function sendChatMessage(e) {
-            e.preventDefault();
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-            appendChat(username, text, false);
-            sendData({ type: 'CHAT', user: username, text: text });
-            input.value = '';
-        }
-
-        function sendQuickChat(text) {
-            appendChat(username, text, false);
-            sendData({ type: 'CHAT', user: username, text: text });
-        }
-
-        function appendChat(sender, text, isSystem) {
-            const box = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            if (isSystem) {
-                div.className = "text-[11px] text-beige-300 text-center italic my-1.5";
-                div.innerText = text;
-            } else {
-                const isMe = sender === username;
-                div.className = `p-2.5 rounded-2xl max-w-[85%] shadow ${
-                    isMe 
-                    ? 'beige-card ml-auto rounded-br-none' 
-                    : 'bg-burgundy-800/90 border border-beige-300/30 text-beige-100 mr-auto rounded-bl-none'
-                }`;
-                const nameColor = isMe ? 'text-burgundy-800' : 'text-beige-300';
-                div.innerHTML = `<div class="text-[10px] ${nameColor} font-bold mb-0.5">${sender} ♥</div><div class="text-xs sm:text-sm leading-snug">${text}</div>`;
-            }
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function sendEmoji(emoji) {
-            spawnEmoji(emoji);
-            sendData({ type: 'EMOJI', emoji: emoji });
-        }
-
-        function spawnEmoji(emoji) {
-            const container = document.getElementById('videoWrapper');
-            const el = document.createElement('div');
-            el.className = 'floating-emoji';
-            el.innerText = emoji;
-            el.style.left = Math.floor(Math.random() * 78 + 10) + '%';
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 2400);
-        }
-
-        function setStatus(text, color) {
-            const badge = document.getElementById('statusBadge');
-            const dotColor = color === 'green' ? 'bg-emerald-400' : color === 'red' ? 'bg-rose-400' : 'bg-amber-400 animate-pulse';
-            badge.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColor}"></span> <span>${text}</span>`;
-        }
-
-        function updateLog(msg) {
-            document.getElementById('syncLog').innerText = msg;
-        }
-
-        function formatTime(sec) {
-            const m = Math.floor(sec / 60).toString().padStart(2, '0');
-            const s = Math.floor(sec % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
-        }
-
-        // İlk Yüklemede İzleme Listesini Hazırla
-        renderPlaylist();
-    </script>
+    function formatTime(sec) {
+      sec = Math.max(0, Math.floor(sec || 0));
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+  </script>
 </body>
 </html>
