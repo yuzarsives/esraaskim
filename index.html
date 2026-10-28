@@ -67,7 +67,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-  <!-- GİRİŞ EKRANI (SADE VE DOĞAL) -->
+  <!-- GİRİŞ EKRANI -->
   <div id="loginModal" class="fixed inset-0 bg-black/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="burgundy-card max-w-md w-full rounded-3xl p-7 text-center space-y-5 border border-[#e3d5ca]/30">
       <div class="text-4xl">🥀</div>
@@ -204,11 +204,9 @@
     let player, isPlayerReady = false;
     let currentVideoId = 'jfKfPfyJRdk';
     let myName = 'Yusuf';
-    let roomCode = 'ESRAYUSUF';
     let peer = null, conn = null;
     let isRemoteAction = false, remoteTimer = null;
 
-    // Hazır Romantik Sözler Havuzu (Günün Notuna basıldıkça rastgele gelir)
     const romanticQuotes = [
       "Gözlerine baktığımda tüm mesafelerin buhar olup uçtuğunu hissediyorum sevgilim.",
       "Dünyanın en güzel ekranı, seninle aynı videoyu izlerken koyu renkli sohbetimizin aktığı yerdir.",
@@ -256,49 +254,63 @@
       document.getElementById('loginModal').classList.add('hidden');
       document.getElementById('userBadge').innerText = myName;
 
-      // PeerJS ile otomatik arka plan bağlantısı (Host veya Guest çakışmasını otomatik çözer)
-      peer = new Peer();
-      peer.on('open', (id) => {
-        // Sabit oda üzerinden bağlanmayı dene
-        const targetHostId = `ey-cinema-${roomCode}-host`;
-        if (myName === 'Yusuf') {
-          // Yusuf host olmaya çalışır, id alınamazsa guest geçer
-          const hostPeer = new Peer(targetHostId);
-          hostPeer.on('open', () => {
-            setConnBadge('🟢 Oda Hazır, Esra Bekleniyor', 'amber');
-            hostPeer.on('connection', c => { conn = c; bindConn(); });
+      // Sabit ve kesintisiz bağlantı kimliği (Esra ve Yusuf için özel oda anahtarı)
+      const roomKey = "esra-yusuf-özel-oda-2026";
+      const myPeerId = myName === 'Yusuf' ? roomKey + "-yusuf" : roomKey + "-esra";
+      const targetPeerId = myName === 'Yusuf' ? roomKey + "-esra" : roomKey + "-yusuf";
+
+      peer = new Peer(myPeerId);
+
+      peer.on('open', () => {
+        setConnBadge('⏳ Diğer taraf bekleniyor...', 'amber');
+        tryConnecting(targetPeerId);
+      });
+
+      peer.on('connection', (incomingConn) => {
+        conn = incomingConn;
+        setupConnectionEvents();
+      });
+
+      peer.on('error', (err) => {
+        if (err.type === 'unavailable-id') {
+          // Eğer ID çakışması olursa doğrudan bağlanmayı dene
+          peer = new Peer();
+          peer.on('open', () => {
+            tryConnecting(targetPeerId);
           });
-          hostPeer.on('error', () => {
-            connectToHost(targetHostId);
+          peer.on('connection', (incomingConn) => {
+            conn = incomingConn;
+            setupConnectionEvents();
           });
-        } else {
-          connectToHost(targetHostId);
         }
       });
     }
 
-    function connectToHost(hostId) {
-      setConnBadge('🔄 Bağlanılıyor...', 'amber');
-      conn = peer.connect(hostId);
-      bindConn();
-      // Eğer host henüz açmadıysa kendisi host olsun
-      setTimeout(() => {
-        if (!conn || !conn.open) {
-          const backupHost = new Peer(hostId);
-          backupHost.on('open', () => setConnBadge('🟢 Oda Kuruldu', 'green'));
-          backupHost.on('connection', c => { conn = c; bindConn(); });
+    function tryConnecting(targetId) {
+      const attempt = setInterval(() => {
+        if (conn && conn.open) {
+          clearInterval(attempt);
+          return;
         }
-      }, 2000);
+        try {
+          conn = peer.connect(targetId, { reliable: true });
+          setupConnectionEvents();
+        } catch(e) {}
+      }, 1500);
     }
 
-    function bindConn() {
+    function setupConnectionEvents() {
+      if (!conn) return;
       conn.on('open', () => {
         setConnBadge('🟢 Bağlandı (Senkron Aktif)', 'green');
         document.getElementById('partnerStatus').innerText = '🟢 Çevrimiçi';
-        addChat('Sistem', `💞 ${myName} odaya katıldı.`, true);
+        addChat('Sistem', `💞 ${myName} odaya bağlandı, sinema aktif.`, true);
       });
       conn.on('data', data => handleData(data));
-      conn.on('close', () => setConnBadge('🔴 Bağlantı koptu', 'red'));
+      conn.on('close', () => {
+        setConnBadge('🔴 Bağlantı koptu', 'red');
+        document.getElementById('partnerStatus').innerText = '🔴 Çevrimdışı';
+      });
     }
 
     function sendToPartner(data) { if (conn && conn.open) conn.send(data); }
@@ -321,7 +333,7 @@
       } else if (data.type === 'ROSE') {
         triggerRoses();
       } else if (data.type === 'HUG') {
-        showPopup('🤗', 'Sımsıkı Sarılma', `"${data.sender} sana sımsıkı sarıldı, kalplerimiz bir..."`);
+        showPopup('🤗', 'Sımsıkı Sarılma', `"${data.sender} sana sımsıkı sarıldı..."`);
         spawnEmoji('🤗');
       }
     }
